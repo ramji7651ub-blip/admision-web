@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel - Student List</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f8f9fa; }
+        h1 { color: #333; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #007bff; color: white; }
+        tr:hover { background: #f1f1f1; }
+        .status { color: green; font-weight: bold; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <h1>Student Admission List <span class="status">● Live Updates</span></h1>
+    <table id="studentTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Course</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td colspan="4" style="text-align:center;">Loading data...</td></tr>
+        </tbody>
+    </table>
+
+    <script>
+        async function loadStudents() {
+            try {
+                // Ye rasta aapke functions/api/admin.js se connect hoga
+                const response = await fetch('/api/admin');
+                const data = await response.json();
+                
+                const tbody = document.querySelector('#studentTable tbody');
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No students registered yet.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.map(student => `
+                    <tr>
+                        <td>${student.id}</td>
+                        <td>${student.name}</td>
+                        <td>${student.email}</td>
+                        <td>${student.course}</td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                console.error("Error loading data:", err);
+            }
+        }
+
+        // Har 5 second mein apne aap naya data check karega
+        setInterval(loadStudents, 5000);
+        loadStudents();
+    </script>
+</body>
+</html>
+
